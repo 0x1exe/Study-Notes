@@ -1,0 +1,199 @@
+{
+  "main": {
+    "id": "b3b5f800b38da79d",
+    "type": "split",
+    "children": [
+      {
+        "id": "e9eec9d0d2a50924",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "85f8131baa0f5111",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "ML/NLP.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5e47593200fa6dbe",
+    "type": "split",
+    "children": [
+      {
+        "id": "5e3b26f0b0730dab",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "63ada199d4ad5ecc",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "4486eeffb1950d2c",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "f3cc1bc73f3d40f7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "fd9697c970396af4",
+    "type": "split",
+    "children": [
+      {
+        "id": "00358fd77eac24b4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "67ba4758a047feeb",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "ML/NLP.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "83c0422b68418671",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "ML/NLP.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "5672a117da88df7c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "b9482553ce50728f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "ML/NLP.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "85f8131baa0f5111",
+  "lastOpenFiles": [
+    "README.md",
+    "ML/NLP.md",
+    "NLP.md",
+    "Miscellaneous and etc/Python.md",
+    "Miscellaneous and etc/Networks and Databases.md",
+    "Miscellaneous and etc/Miscellaneous.md",
+    "Miscellaneous and etc/Math and other concepts.md",
+    "Miscellaneous and etc/Git.md",
+    "Miscellaneous and etc/Design patterns.md",
+    "Miscellaneous and etc/C++.md",
+    "Miscellaneous and etc/Algorithms and data structures.md",
+    "Miscellaneous and etc",
+    "Новая папка",
+    "ML/CV.md",
+    "ML/Computer vision.md",
+    "ML/ML models.md",
+    "ML/Metrics.md",
+    "ML/Feature selection.md",
+    "ML/Feature engineering.md",
+    "ML/Best practices.md",
+    "ML/Boosting.md",
+    "ML/Blending, stacking and other techniques.md",
+    "ML",
+    "Images/Pasted image 20240719062035.png",
+    "Images/Pasted image 20240719061752.png",
+    "Images/Pasted image 20240718191333.png",
+    "Images/Pasted image 20240718191014.png",
+    "Images/Pasted image 20240718172752.png",
+    "Images/Pasted image 20240718173054.png",
+    "Images/Pasted image 20240718173127.png",
+    "Images/Pasted image 20240718171620.png",
+    "Images/Pasted image 20240718142629.png",
+    "Images/Pasted image 20240718142324.png",
+    "ML models.md",
+    "Python.md",
+    "Git.md",
+    "Best practices.md",
+    "CV.md",
+    "Miscellaneous.md",
+    "Algorithms and datastructures",
+    "Images/dockerlabs_collabnix.pdf",
+    "Images/cheat_sheet.pdf",
+    "Images/cv-sheet.pdf",
+    "Untitled.canvas",
+    "Images/Data_Science_Cheatsheet.pdf",
+    "Images/ds-math-cheatsheet.pdf",
+    "Images"
+  ]
+}
