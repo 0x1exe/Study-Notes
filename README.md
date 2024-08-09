@@ -1,6 +1,6 @@
 
 # Description 
-This repo consist of my notes on different topics be it ML, Math or some other programming related stuff.
+This repo consists of my notes on different topics, be it ML, math or some other programming related stuff.
 
 Some notes are unreadable for unenlightened reader, because they were written for my own convenience, understanding and reference.
 
