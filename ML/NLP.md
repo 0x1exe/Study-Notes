@@ -2458,3 +2458,153 @@ Hyde расшифровывается как Hypothetical Document Embeddings и
 
 **Иногда вопросы юзера слишком абстрактны, и требуется больше контекста, который LLM может дать, и без которого поиск в базе не имеет никакого смысла.**
 
+
+## Как улучшить? 
+
+1. **Предварительная выборка:** эффективная загрузка эмбеддингов в векторное хранилище.
+2. **Выборка:** точный и быстрый поиск релевантного контента.
+3. **Пост-обработка:** грамотная предварительная обработка результатов перед тем, как отправить их в LLM.
+4. **Генерация:** максимально эффективное использование контекста для решения задачи пользователя.
+5. **Маршрутизация:** оптимизация маршрутизации запроса, например, использование агентного подхода — разбиения вопроса на части и организация их последовательной обработки моделью.
+
+![[Pasted image 20240719071100.png]]
+# Abacus embedding [Transformers can do math with the right embeddings]
+
+Key contributions:
+
+- propose a new positional embedding called Abacus Embeddings to better capture the significance of each digit, which leads to near-perfect in-distribution generalization.
+- combining Abacus Embeddings with input injection and looped transformers performance further improves, increasing from 92.9% to 99.1% in out of distribution accuracy, an 87% reduction in error compared to using the embeddings with standard architectures alone.
+- pushed length generalization beyond existing work and showed that authors models can solve problems with six times as many digits as the largest samples in the training set, whereas the previous state of the art is only two and a half times.
+
+## Length generalization for addition
+
+range of methods were studied for improving the arithmetic capabilities centered on two main hypotheses:
+- the positional information for individual digits within numbers is being lost
+- recurrence can improve the reasoning abilities of transformer architectures on multi-step arithmetic reasoning problems.
+
+Experimental setup:
+- decoder-only causal language models were trained to solve addition problems
+- inputs are formatted least significant digit first, e.g. 98282 + 3859172 = 2787472
+- Unlike prior work, authors did not added any padding between digits and did not padded any numbers with zeros, neither in the case of carry digits , nor to make all operands the same length
+- To facilitate training of many models from scratch, authors used a language model cramming setup [2] and limit each training run to 8 exaFLOP of compute (a single Nvidia RTXA4000 GPU for 24 hours); for multiplication results authors allowed 64 exaFLOP(eight Nvidia RTXA4000 GPUs for 24 hours)
+- During training, authors masked the input question and only compute loss on the answer digits
+
+Two standard transformer architectures considered:
+- First, authors used a standard autoregressive transformer model where multiple decoder layers are stacked in a feedforward manner.
+- Second, authors enhanced this standard transformer model by incorporating input injection, where the embedded inputs are added to the input of each decoder layer.
+
+## Solving addition
+
+- **first hypothesis is that the significance of each digit**  (i.e. each digit’s position relative to the beginning of the number) is not easy for transformers to represent, and that this sub-problem presents more of a hurdle than the actual addition itself.
+- uthors designed a specially built positional embedding that encodes the location of each digit relative to the start of the current number, and called it as **Abacus Embeddings**.
+- inspiration drawn from Randomized Embeddings, but instead of using random ascending indices to represent positions in a sample, it use consecutive ascending indices with a random starting position to allow for length generalization
+ ![[Pasted image 20240807082523.png]]
+- Abacus Embeddings improve generalization performance up to 100 digits and beyond for standard transformer architectures
+- Unless otherwise stated, authors used a maximally recurrent architecture, i.e. only one unique layer recurred to achieve the effective depth. Authors also employed input injection, skip-connections that propagate a copy of the input to each layer in the network
+- Figure below compare all architecture variants using both FIRE and NoPE embeddings trained on addition over operands with up to 40 digits![[Pasted image 20240807082738.png]]
+- Despite having approximately 10× fewer parameters than the other models, we see that the looped transformer (recurrent, with input injection and progressive loss), achieves the best out of distribution performance using either position embedding
+## Solving multiplication
+- First, authors removed the input injection from inside the recurrent block and second, we divide the gradients in the recurrent block by the number of recurrences, down-weighing the gradient update from batches with many recurrences.
+![[Pasted image 20240807082939.png]]
+# Fast geometric ensembling 
+
+Traditionally the loss surfaces of deep neural networks are thought of as having multiple isolated local optima (see the left panel of the figure below). We show however, that the optima are in fact connected by simple curves, such as a polygonal chain with only one bend, over which training and test accuracy are nearly constant (see the middle and right panels of the figure below) and propose a method to find such curves. Inspired by this geometric observation we propose Fast Geometric Ensembling (FGE), an ensembling method that aims to explore the loss surfaces along the curves of low loss.
+
+**The method consists of running SGD with a cyclical learning rate schedule starting from a pre-trained solution, and averaging the predictions of the traversed networks. We show that FGE outperforms ensembling independently trained networks and the recently proposed [Snapshot Ensembling](https://arxiv.org/abs/1704.00109) for any given computational budget.**
+
+# Rotary Embeddings: A Relative Revolution
+## Problem statement
+
+When applying self-attention to a given domain, the choice of position encoding typically involves tradeoffs between simplicity, flexibility, and efficiency. For example, learned absolute positional encoding is very simple, but may not generalize and are not always particularly meaningful due to the common practices [1, 3, 9, 15] of packing short sentences and phrases together in a single context and breaking up sentences across contexts.
+
+Another major limitation of existing methods is that they do not work with efficient transformers. Methods like T5's relative positional bias [10] require constructing the full N×N attention matrix between positions, which is not possible when using many of the efficient alternatives to softmax attention, including kernelized variants like FAVOR+ [2].
+
+## Intuition 
+
+We would like to find a positional encoding function f(x,ℓ) for an item x and its position ℓ such that, for two items q and k at positions m and n, the inner product between f(q,m) and f(k,n) is sensitive only to the values of q, k, and their relative position m−n. This is related in spirit to the kernel trick: we are searching for a feature map such that its kernel has certain properties. A key piece of information is the geometric definition of the dot product between Euclidean vectors:
+$$
+\mathbf{q} \cdot \mathbf{k} = \lVert \mathbf{q} \rVert \lVert \mathbf{k} \rVert \cos(\theta_{qk})
+$$
+- With this in mind, the intuition behind RoPE is that we can represent the token embeddings as complex numbers and their positions as pure rotations that we apply to them.
+
+If we shift both the query and key by the same amount, changing absolute position but not relative position, this will lead both representations to be additionally rotated in the same manner---as we will see in the derivation---thus the angle between them will remain unchanged and thus the dot product will also remain unchanged. By exploiting the nature of rotations, the dot product used in self-attention will have the property we are looking for, preserving relative positional information while discarding absolute position.
+
+The following is an example illustrating the core idea of RoPE—a more rigorous derivation is presented in a subsequent section. Some arbitrary 0<ε≤π/2N is chosen, where N is the maximum sequence length. When viewed elementwise on q and k, with j as the element index, RoPE can be viewed as follows:
+$$
+\begin{align}
+\mathrm{RoPE}(x, m) &= xe^{mi\varepsilon} \\
+\langle \mathrm{RoPE}(q_j, m), \mathrm{RoPE}(k_j, n)\rangle &= \langle q_j e^{mi\varepsilon}, k_j e^{ni\varepsilon} \rangle \\
+&= q_j k_j e^{mi\varepsilon} \overline{e^{ni\varepsilon}} \\
+&= q_j k_j e^{(m - n)i\varepsilon} \\
+&= \mathrm{RoPE}(q_j k_j, m - n)
+\end{align}
+$$
+## Derivation
+
+We begin with absolute positional information: for each token, we know where it is in the sequence. However, dot products (and therefore attention) do not preserve absolute positional information, so if we encode that positional information in the absolute position of the embeddings, we will lose a significant amount of information. -> On the other hand, dot products do preserve relative position, so if we can encode the absolute positional information into the token embeddings in a way that only leverages relative positional information, that will be preserved by the attention function.
+
+Instead of working in the usual Rd, we will work in Cd/2 by considering consecutive pairs of elements of the query and key vectors to be a single complex number. Specifically, instead of viewing q=(q1,q2,q3,q4,…,qd) 
+as a d-dimensional real vector we view it as $$ q=(q1+iq2,q3+iq4,…qd−1+iqd)∈Cd/2. $$ As we will see, casting it in this fashion will make discussing the rotary embeddings easier. If d is odd, we can pad it with a dummy coordinate to ensure things line up correctly. Alternatively, we can simply increase d by one
+
+Let q and k be query and key vectors respectively and let m and n be the absolute positions of the corresponding tokens. Let f(x,ℓ) be the function that takes the token embedding x in position ℓ and outputs a new embedding that contains (in some fashion) the relative positional information. Our goal is to find a "nice" function f that does this. Once the positional information is encoded, we need to compute the inner product like so:
+
+$$
+\langle f(\mathbf{q}, m),f(\mathbf{k},n) \rangle = g(\mathbf{q},\mathbf{k}, m - n)
+$$
+
+'
+where g(q,k,m−n) now represents the pre-softmax logit of the usual attention equation. Writing these three functions in exponential form gives:
+$$
+\begin{align*}
+f(\mathbf{q}, m) &= R_f(\mathbf{q}, m)e^{i\Theta_f(\mathbf{q}, m)}\\
+f(\mathbf{k}, n) &= R_f(\mathbf{k}, n)e^{i\Theta_f(\mathbf{k}, n)}\\
+g(\mathbf{q}, \mathbf{k}, m - n) &= R_g(\mathbf{q}, \mathbf{k}, m - n)e^{i\Theta_g(\mathbf{q}, \mathbf{k}, m - n)}
+\end{align*}
+$$
+![[Pasted image 20240807213443.png]]Computing the inner product and equating corresponding components yields:
+$$
+\begin{align*}
+R_f(\mathbf{q}, m) R_f(\mathbf{k}, n) &= R_g(\mathbf{q}, \mathbf{k}, m - n)\\
+\Theta_f(\mathbf{q}, m) - \Theta_f(\mathbf{k}, n) &= \Theta_g(\mathbf{q}, \mathbf{k}, m - n)\\
+\end{align*}
+$$
+Substituting m=n and applying the initial condition f(x,0)=x gives:
+$$ R_f(\mathbf{q}, m) R_f(\mathbf{k}, m) = R_g(\mathbf{q}, \mathbf{k}, 0) = R_f(\mathbf{q}, 0) R_f(\mathbf{k}, 0) = \mathbf{q}\mathbf{k} $$
+Long story short, final formula is:
+$$
+f(\mathbf{q}, m) = R_f(\mathbf{q}, m)e^{i\Theta_f(\mathbf{q}, m)}=\mathbf{q}e^{i(\Theta(\mathbf{q})+m\mathbf{\theta})} = \sum_{j=1}^{d/2} q_je^{im\theta_j} \vec{e_j}
+$$
+and likewise for k. Since computers tend to like real numbers and matrices more than complex numbers, its convenient to convert this expression into the matrix equation:
+$$
+f(\mathbf{q}, m) =
+\begin{pmatrix}
+M_1 & & & \\
+& M_2 & & \\
+& & \ddots & \\
+& & & M_{d/2}
+\end{pmatrix}
+\begin{pmatrix}
+q_1\\
+q_2\\
+\vdots\\
+q_d
+\end{pmatrix} = \mathbf{\Theta_m Q_m} = \mathbf{\Theta_m W_q X_m}
+$$
+where: 
+$$
+M_j=\begin{pmatrix}\cos m\theta_j & -\sin m\theta_j \\sin m\theta_j & \cos m\theta_j\end{pmatrix}
+$$
+Θm is the block diagonal rotation matrix, Wq is the learned query weights, and Xm is the embedding of the m token. Again, we also have the corresponding equation for k.
+## How is this different from the sinusoidal embeddings used in "Attention is All you Need"
+
+There are two ways that rotary embeddings are different from sinusoidal embeddings:
+
+1. Sinusoidal embeddings apply to each coordinate individually, while rotary embeddings mix pairs of coordinates
+2. Sinusoidal embeddings add a cos⁡(mθ) or sin⁡(mθ) term, while rotary embeddings use a multiplicative factor.
+
+## Implementation
+
+The original implementations of RoPE are available in [roformer](https://github.com/ZhuiyiTechnology/roformer) and [bert4keras](https://github.com/bojone/bert4keras).
+
+More naive implementation is the following: 
+![[Pasted image 20240807214313.png]]
